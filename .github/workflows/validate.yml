@@ -1,0 +1,28 @@
+name: Validate Submission
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate folder structure
+        run: |
+          changed=$(git diff --name-only origin/main...HEAD | grep '^submissions/' || true)
+          if [ -z "$changed" ]; then
+            echo "❌ No files under /submissions found. Please add your project there." && exit 1
+          fi
+
+      - name: Check README existence
+        run: |
+          for dir in $(find submissions -mindepth 1 -maxdepth 1 -type d); do
+            if [ ! -f "$dir/README.md" ]; then
+              echo "❌ Missing README.md in $dir" && exit 1
+            fi
+          done
+
+      - name: Success
+        run: echo "✅ Structure looks good!"
