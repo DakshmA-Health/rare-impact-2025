@@ -16,24 +16,39 @@ Please read and adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md). We are co
 
 ## Development Workflow
 
-### 1. Fork the Repository
+### For Hackathon Teams (Submissions)
+
+If you're submitting a hackathon project, follow the detailed workflow in [Submission Guidelines](./SUBMISSION_GUIDELINES.md#-git-workflow-for-teams).
+
+**Quick Summary:**
+1. Team leader forks the repository
+2. Create a branch: `submission/your-team-name` (or `your-team-name`)
+3. Team members collaborate on the leader's fork
+4. Create your submission in `submissions/your-team-name/`
+5. Submit PR from your branch (NOT from `main`)
+
+### For General Contributions
+
+If you're contributing improvements to the hackathon repository itself (not submitting a project):
+
+#### 1. Fork the Repository
 ```bash
 git clone https://github.com/your-username/rare-impact-2025.git
 cd rare-impact-2025
 git remote add upstream https://github.com/DakshmA-Health/rare-impact-2025.git
 ```
 
-### 2. Create a Feature Branch
+#### 2. Create a Feature Branch
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-### 3. Make Your Changes
+#### 3. Make Your Changes
 - Follow the coding standards below
 - Write clear commit messages
 - Keep changes focused and atomic
 
-### 4. Keep Your Fork Updated
+#### 4. Keep Your Fork Updated
 ```bash
 git fetch upstream
 git merge upstream/main
@@ -42,7 +57,7 @@ git merge upstream/main
 ## Pull Request Process
 
 1. Ensure your fork is up to date with the main repository
-2. Create a new pull request from your feature branch
+2. **Create a new pull request from your feature/submission branch** (never from `main`)
 3. Fill out the pull request template completely
 4. Ensure all CI checks pass
 5. Request reviews from team members if needed
@@ -91,9 +106,7 @@ When creating an issue, please include:
 ## 🆘 Getting Help
 
 If you need assistance:
-1. Check the [GitHub Issues](https://github.com/DakshmA-Health/rare-impact-2025/issues)
-2. Join our [community chat](link-to-chat)
-3. Email support@dakshamahealth.org
+- **Email:** support@dakshamahealth.org
 
 ## 🙏 Acknowledgments
 

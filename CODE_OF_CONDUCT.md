@@ -41,7 +41,7 @@ Unacceptable behaviors include:
 This Code of Conduct applies to all hackathon venues, including:
 
 - All events, both in-person and virtual
-- All official communication channels (Slack, Discord, email, etc.)
+- All official communication channels (email, etc.)
 - All participants, including sponsors, judges, mentors, and organizers
 - All project submissions and related materials
 
@@ -53,7 +53,6 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 
 For any questions or concerns regarding this Code of Conduct, please contact:
 - **Email:** [conduct@dakshamahealth.org](mailto:conduct@dakshamahealth.org)
-- **Emergency Contact:** [Provide local emergency contact if applicable]
 
 ## License
 

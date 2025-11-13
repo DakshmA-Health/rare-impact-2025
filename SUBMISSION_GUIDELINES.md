@@ -10,7 +10,7 @@
    - Setup and usage instructions
 
 2. **Demo Materials**
-   - Video demo (2-5 minutes)
+   - Demo video link
    - Screenshots or screen recordings
    - Live demo link (if applicable)
 
@@ -25,14 +25,73 @@ Organize your submission as follows:
 ```
 submissions/
 └── your-team-name/       # Use hyphens, no spaces
-    ├── README.md         # Project documentation
-    ├── demo/             # Demo materials
-    │   ├── demo.mp4      # Video demo (2-5 min)
+    ├── README.md         # Project documentation (include demo video link here)
+    ├── demo/             # Demo materials (optional)
     │   └── screenshots/  # Key screenshots
     └── src/              # Source code (if applicable)
         ├── frontend/     # Frontend code
         └── backend/      # Backend code
 ```
+
+## 🔀 Git Workflow for Teams
+
+### Step-by-Step Submission Process
+
+1. **Team Leader Forks the Repository**
+   - Go to the main repository: `https://github.com/DakshmA-Health/rare-impact-2025`
+   - Click "Fork" button to create your own copy
+
+2. **Create a Submission Branch** (Recommended)
+   ```bash
+   git clone https://github.com/your-username/rare-impact-2025.git
+   cd rare-impact-2025
+   git checkout -b submission/your-team-name
+   ```
+   > 💡 **Why use a branch?** It keeps your main branch clean, allows easy updates, and follows Git best practices.
+
+3. **Set Up Team Collaboration**
+   - **Option A:** Leader adds team members as collaborators to their fork (Settings → Collaborators)
+   - **Option B:** Team members clone the leader's fork and work on the same branch
+   
+   For team members joining:
+   ```bash
+   git clone https://github.com/leader-username/rare-impact-2025.git
+   cd rare-impact-2025
+   git checkout submission/your-team-name
+   ```
+
+4. **Create Your Submission Folder**
+   ```bash
+   mkdir -p submissions/your-team-name
+   cd submissions/your-team-name
+   # Create your README.md and project files here
+   ```
+
+5. **Commit and Push Your Work**
+   ```bash
+   git add .
+   git commit -m "Add submission for team-name"
+   git push origin submission/your-team-name
+   ```
+
+6. **Create Pull Request**
+   - Go to your fork on GitHub
+   - Click "New Pull Request"
+   - **Source:** `your-username/rare-impact-2025:submission/your-team-name`
+   - **Target:** `DakshmA-Health/rare-impact-2025:main`
+   - Fill out the [Pull Request Template](../PULL_REQUEST_TEMPLATE.md)
+
+### ⚠️ Important Notes
+
+- **Always create a branch** - Do NOT submit PRs directly from `main` branch
+- **Branch naming:** Use `submission/team-name` or just `team-name` (use hyphens, no spaces)
+- **Updating your submission:** Push new commits to the same branch - your PR will automatically update
+- **Keep fork updated:** Periodically sync with the main repository:
+  ```bash
+  git remote add upstream https://github.com/DakshmA-Health/rare-impact-2025.git
+  git fetch upstream
+  git merge upstream/main
+  ```
 
 ## 📝 README.md Template
 
@@ -84,7 +143,7 @@ submissions/
 ## 🚫 Common Pitfalls to Avoid
 
 1. **Incomplete Submissions**
-   - Missing demo video
+   - Missing demo video link
    - Incomplete documentation
    - No clear setup instructions
 
@@ -101,12 +160,10 @@ submissions/
 ## 🆘 Getting Help
 
 If you encounter issues:
-1. Check our [FAQ](../FAQ.md)
-2. Search existing [GitHub Issues](https://github.com/DakshmA-Health/rare-impact-2025/issues)
-3. Email support@dakshamahealth.org
+- **Email:** support@dakshamahealth.org
 
 > ⏰ **Remember**: Submit early and test thoroughly before the deadline!
 
 ## 📜 License
 
-By submitting your project, you agree to the terms outlined in our [License](../LICENSE) file.
+By submitting your project, you agree that your submission will be made available under the same license terms as this repository. All participants retain ownership of their intellectual property.

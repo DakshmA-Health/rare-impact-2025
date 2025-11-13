@@ -2,27 +2,111 @@ name: Validate Submission
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - 'submissions/**'
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for proper diff
 
-      - name: Validate folder structure
+      - name: Get changed submission folders
+        id: changed_folders
         run: |
-          changed=$(git diff --name-only origin/main...HEAD | grep '^submissions/' || true)
-          if [ -z "$changed" ]; then
-            echo "❌ No files under /submissions found. Please add your project there." && exit 1
+          # Get base SHA for comparison
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          # Get all changed files in submissions directory
+          changed_files=$(git diff --name-only --diff-filter=ARCD "$BASE_SHA" "$HEAD_SHA" | grep '^submissions/' || true)
+          
+          if [ -z "$changed_files" ]; then
+            echo "⚠️ No changes detected in submissions directory."
+            echo "skip_validation=true" >> $GITHUB_OUTPUT
+            exit 0
           fi
-
-      - name: Check README existence
-        run: |
-          for dir in $(find submissions -mindepth 1 -maxdepth 1 -type d); do
-            if [ ! -f "$dir/README.md" ]; then
-              echo "❌ Missing README.md in $dir" && exit 1
-            fi
+          
+          # Extract unique folder names (first level only)
+          folders=$(echo "$changed_files" | sed 's|submissions/\([^/]*\).*|\1|' | sort -u)
+          echo "folders<<EOF" >> $GITHUB_OUTPUT
+          echo "$folders" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "skip_validation=false" >> $GITHUB_OUTPUT
+          
+          echo "📁 Detected submission folders:"
+          echo "$folders" | while read folder; do
+            echo "  - $folder"
           done
 
-      - name: Success
-        run: echo "✅ Structure looks good!"
+      - name: Validate submission structure
+        if: steps.changed_folders.outputs.skip_validation != 'true'
+        run: |
+          folders="${{ steps.changed_folders.outputs.folders }}"
+          
+          if [ -z "$folders" ]; then
+            echo "❌ No submission folders detected in changes."
+            exit 1
+          fi
+          
+          errors=0
+          while IFS= read -r folder; do
+            [ -z "$folder" ] && continue
+            
+            folder_path="submissions/$folder"
+            
+            # Check if folder exists
+            if [ ! -d "$folder_path" ]; then
+              echo "❌ Folder $folder_path does not exist"
+              errors=$((errors + 1))
+              continue
+            fi
+            
+            # Validate folder naming (should use hyphens, no spaces)
+            if [[ "$folder" =~ [[:space:]] ]]; then
+              echo "❌ Folder name '$folder' contains spaces. Use hyphens instead (e.g., 'team-name')."
+              errors=$((errors + 1))
+            fi
+            
+            # Check README.md exists
+            if [ ! -f "$folder_path/README.md" ]; then
+              echo "❌ Missing README.md in $folder_path"
+              echo "   Each submission must include a README.md file with project documentation."
+              errors=$((errors + 1))
+            else
+              # Basic README content validation
+              readme_content=$(cat "$folder_path/README.md" || echo "")
+              
+              # Check for demo video link (case-insensitive)
+              if ! echo "$readme_content" | grep -qiE "(demo.*video|video.*demo|youtube|vimeo|demo.*link)"; then
+                echo "⚠️  Warning: README.md in $folder_path may be missing demo video link."
+                echo "   Please ensure your README.md includes a demo video link as per submission guidelines."
+              fi
+              
+              # Check for team information
+              if ! echo "$readme_content" | grep -qiE "(team|member|👥)"; then
+                echo "⚠️  Warning: README.md in $folder_path may be missing team information."
+              fi
+              
+              echo "✅ $folder_path structure looks good!"
+            fi
+          done <<< "$folders"
+          
+          if [ $errors -gt 0 ]; then
+            echo ""
+            echo "❌ Validation failed with $errors error(s)."
+            echo "📘 Please review the [Submission Guidelines](https://github.com/${{ github.repository }}/blob/main/SUBMISSION_GUIDELINES.md) for requirements."
+            exit 1
+          fi
+
+      - name: Validation passed
+        if: steps.changed_folders.outputs.skip_validation != 'true'
+        run: |
+          echo "✅ All submission validations passed!"
+          echo "📝 Remember to include:"
+          echo "   - Complete README.md with team info and demo video link"
+          echo "   - Project documentation"
+          echo "   - Source code (if applicable)"

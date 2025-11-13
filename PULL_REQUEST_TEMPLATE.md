@@ -5,7 +5,7 @@
 ## 📋 Submission Checklist
 - [ ] All required files are included
 - [ ] Code is properly documented
-- [ ] Demo video is 2-5 minutes long
+- [ ] Demo video link is included in README.md
 - [ ] README.md follows the template
 - [ ] All team members have contributed
 
@@ -13,7 +13,7 @@
 
 **Team Name:** [Your Team Name]  
 **Project Title:** [Your Project Title]  
-**Track:** [Selected Track from Themes]  
+**Theme:** [Select one: Early Diagnosis & Screening / Data Management & Registries / Access to Care in Remote Areas / Patient Support Systems / Awareness & Health Literacy / Digital Tools for Health Equity]  
 **Submission Type:** [Phase 1 / Final]
 
 ## 🔗 Links

@@ -18,9 +18,6 @@ Welcome to **Rare Impact 2025**, a virtual hackathon organized by **DakshmA Heal
   - [🚀 How to Participate](#-how-to-participate)
   - [📝 Submission Guidelines](#-submission-guidelines)
   - [🏆 Judging Criteria](#-judging-criteria)
-  - [💡 Resources](#-resources)
-    - [📚 Learning **Resources**](#-learning-resources)
-    - [🛠️ Development Resources](#️-development-resources)
   - [🤝 Code of Conduct](#-code-of-conduct)
   - [❓ Need Help?](#-need-help)
   - [📞 Contact Us](#-contact-us)
@@ -46,18 +43,19 @@ To develop innovative digital health solutions that address critical challenges 
 ## 🚀 How to Participate
 
 1. **Form a Team** (1-5 members)
-2. **Fork this repository**
-3. **Create your project** following our [Submission Guidelines](./SUBMISSION_GUIDELINES.md)
-4. **Submit** via Pull Request by the deadline
+2. **Team leader forks this repository**
+3. **Create a branch** (e.g., `submission/your-team-name`) - do NOT work on `main`
+4. **Create your project** following our [Submission Guidelines](./SUBMISSION_GUIDELINES.md)
+5. **Submit** via Pull Request from your branch by the deadline
 
-> ℹ️ For detailed instructions, see our [Submission Guidelines](./SUBMISSION_GUIDELINES.md) and [Contribution Guide](./CONTRIBUTING.md).
+> ℹ️ For detailed Git workflow and instructions, see our [Submission Guidelines](./SUBMISSION_GUIDELINES.md#-git-workflow-for-teams) and [Contribution Guide](./CONTRIBUTING.md).
 
 ## 📝 Submission Guidelines
 
 Your submission must include:
 - Working prototype or detailed concept
 - Project documentation (README.md)
-- Demo video (2-5 minutes)
+- Demo video link
 - Screenshots or screen recordings
 
 📘 [View complete submission requirements](./SUBMISSION_GUIDELINES.md)
@@ -70,33 +68,18 @@ Projects will be evaluated on:
 - **Feasibility** (25%): Practical implementation potential
 - **User-Centered Design** (20%): Meets real user needs
 
-## 💡 Resources
-
-### 📚 Learning **Resources**
-- [GitHub Guide for Beginners](https://guides.github.com/activities/hello-world/)
-- [GitHub Pull Request Guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
-- [Open Source Guide](https://opensource.guide/)
-
-### 🛠️ Development Resources
-- [Free Development Tools](./RESOURCES.md)
-- [API Directory](./RESOURCES.md#apis)
-- [Design Resources](./RESOURCES.md#design-tools)
-
 ## 🤝 Code of Conduct
 
 We are committed to providing a welcoming and inclusive environment. All participants must adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## ❓ Need Help?
 
-- Join our [Discord/Slack]() (link in welcome email)
-- Check our [Frequently Asked Questions](./FAQ.md)
 - Email: support@dakshamahealth.org
 
 ## 📞 Contact Us
 
 📨 **General Inquiries:** communications@pairacademy.org  
-🌐 **Website:** [dakshamahealth.org/Hackathon.html](https://www.dakshamahealth.org/Hackathon.html)  
-💻 **GitHub Issues:** [Report technical issues](https://github.com/DakshmA-Health/rare-impact-2025/issues)
+🌐 **Website:** [dakshamahealth.org/Hackathon.html](https://www.dakshamahealth.org/Hackathon.html)
 
 ---
 
