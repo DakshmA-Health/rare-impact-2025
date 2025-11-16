@@ -1,0 +1,129 @@
+name: PR Backup
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize] # runs whenever PR is created or updated
+  schedule:
+    - cron: "0 0 * * 0" # Runs every Sunday midnight (UTC)
+  workflow_dispatch: # manual trigger
+
+jobs:
+  backup-prs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitHub CLI and Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq zip rsync
+
+      - name: Authenticate GH CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${GITHUB_TOKEN}" | gh auth login --with-token
+
+      - name: Create Backup Folder
+        run: mkdir -p backups
+
+      - name: Fetch and Backup All PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get list of PRs to backup
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # For PR events, backup only the current PR
+            pr_number="${{ github.event.pull_request.number }}"
+            pr_list="$pr_number"
+            echo "📦 Backing up PR #$pr_number"
+          else
+            # For scheduled/manual runs, backup all open PRs
+            pr_list=$(gh pr list --state open --json number --jq '.[].number' | tr '\n' ' ')
+            echo "📦 Backing up all open PRs: $pr_list"
+          fi
+          
+          # Backup each PR
+          for pr in $pr_list; do
+            echo ""
+            echo "🔄 Processing PR #$pr"
+            
+            # Get PR branch name
+            pr_branch=$(gh pr view $pr --json headRefName --jq -r '.headRefName')
+            pr_repo=$(gh pr view $pr --json headRepository --jq -r '.headRepository.name')
+            pr_owner=$(gh pr view $pr --json headRepository --jq -r '.headRepository.owner.login')
+            
+            echo "   Branch: $pr_branch"
+            echo "   Repository: $pr_owner/$pr_repo"
+            
+            # Create temporary directory for this PR
+            tempDir="pr-$pr-$(date +%Y%m%d%H%M%S)"
+            mkdir -p "$tempDir"
+            
+            # Save current branch
+            current_branch=$(git branch --show-current || echo "main")
+            
+            # Checkout PR branch using GitHub CLI (handles forks automatically)
+            echo "   Checking out PR branch..."
+            if gh pr checkout $pr --force; then
+              echo "   ✅ Successfully checked out PR branch"
+            else
+              echo "   ❌ Failed to checkout PR #$pr"
+              rm -rf "$tempDir"
+              continue
+            fi
+            
+            # Copy entire repository contents (complete codebase, not just changes)
+            echo "   Copying complete repository contents..."
+            rsync -a \
+              --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='.venv' \
+              --exclude='venv' \
+              --exclude='__pycache__' \
+              --exclude='*.pyc' \
+              --exclude='.DS_Store' \
+              --exclude='Thumbs.db' \
+              . "$tempDir/" 2>/dev/null || {
+              # Fallback: use cp for compatibility
+              echo "   Using fallback copy method..."
+              find . -mindepth 1 -maxdepth 1 \
+                ! -name '.git' \
+                ! -name 'node_modules' \
+                ! -name '.venv' \
+                ! -name 'venv' \
+                ! -name '__pycache__' \
+                -exec cp -r {} "$tempDir/" \; 2>/dev/null || true
+            }
+            
+            # Create zip archive with complete PR codebase
+            echo "   Creating backup archive..."
+            cd "$tempDir"
+            zip -r "../backups/PR-$pr-complete.zip" . -q || {
+              echo "   ⚠️  Zip failed, trying tar..."
+              cd ..
+              tar -czf "backups/PR-$pr-complete.tar.gz" -C "$tempDir" . || true
+            }
+            cd ..
+            
+            # Cleanup
+            rm -rf "$tempDir"
+            
+            # Return to original branch
+            git checkout "$current_branch" 2>/dev/null || git checkout main || true
+            
+            echo "   ✅ PR #$pr backed up successfully"
+          done
+          
+          echo ""
+          echo "📊 Backup Summary:"
+          ls -lh backups/ | tail -n +2 || echo "   No backups created"
+
+      - name: Upload Backups as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-backup-${{ github.run_id }}
+          path: backups/

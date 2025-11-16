@@ -12,12 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history for proper diff
+          fetch-depth: 0
 
       - name: Get changed submission folders
         id: changed_folders
         run: |
-          # Get base SHA for comparison
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           
@@ -71,17 +70,17 @@ jobs:
               errors=$((errors + 1))
             fi
             
-            # Check README.md exists
+            # Check README.md exists (required)
             if [ ! -f "$folder_path/README.md" ]; then
               echo "❌ Missing README.md in $folder_path"
-              echo "   Each submission must include a README.md file with project documentation."
+              echo "   Each submission must include a README.md file with all required information."
               errors=$((errors + 1))
             else
               # Basic README content validation
               readme_content=$(cat "$folder_path/README.md" || echo "")
               
               # Check for demo video link (case-insensitive)
-              if ! echo "$readme_content" | grep -qiE "(demo.*video|video.*demo|youtube|vimeo|demo.*link)"; then
+              if ! echo "$readme_content" | grep -qiE "(demo.*video|video.*demo|youtube|vimeo|demo.*link|http.*://.*(youtube|vimeo|drive|dropbox))"; then
                 echo "⚠️  Warning: README.md in $folder_path may be missing demo video link."
                 echo "   Please ensure your README.md includes a demo video link as per submission guidelines."
               fi
@@ -106,7 +105,4 @@ jobs:
         if: steps.changed_folders.outputs.skip_validation != 'true'
         run: |
           echo "✅ All submission validations passed!"
-          echo "📝 Remember to include:"
-          echo "   - Complete README.md with team info and demo video link"
-          echo "   - Project documentation"
-          echo "   - Source code (if applicable)"
+          echo "📝 Your submission folder contains all required files."
