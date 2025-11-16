@@ -83,9 +83,9 @@ jobs:
               echo "   ⚠️  No team folder found, using PR number"
             fi
             
-            # Create backup filename with date
+            # Create backup filename using team name and date
             current_date=$(date +%Y%m%d)
-            backup_filename="backup_${current_date}"
+            backup_filename="${team_name}_${current_date}"
             
             # Create temporary directory for this PR
             tempDir="pr-$pr-$(date +%Y%m%d%H%M%S)"
@@ -102,6 +102,7 @@ jobs:
               --exclude='*.pyc' \
               --exclude='.DS_Store' \
               --exclude='Thumbs.db' \
+              --exclude='backups' \
               . "$tempDir/" 2>/dev/null || {
               # Fallback: use cp for compatibility
               echo "   Using fallback copy method..."
@@ -111,18 +112,17 @@ jobs:
                 ! -name '.venv' \
                 ! -name 'venv' \
                 ! -name '__pycache__' \
+                ! -name 'backups' \
                 -exec cp -r {} "$tempDir/" \; 2>/dev/null || true
             }
             
-            # Create zip archive with date (one zip per PR, but all will have same date prefix)
-            # Include PR number in filename to avoid overwrites
-            backup_filename_with_pr="${backup_filename}_PR${pr}"
-            echo "   Creating backup archive: ${backup_filename_with_pr}.zip"
+            # Create zip archive with team name and date
+            echo "   Creating backup archive: ${backup_filename}.zip"
             cd "$tempDir"
-            zip -r "../backups/${backup_filename_with_pr}.zip" . -q || {
+            zip -r "../backups/${backup_filename}.zip" . -q || {
               echo "   ⚠️  Zip failed, trying tar..."
               cd ..
-              tar -czf "backups/${backup_filename_with_pr}.tar.gz" -C "$tempDir" . || true
+              tar -czf "backups/${backup_filename}.tar.gz" -C "$tempDir" . || true
             }
             cd ..
             
@@ -135,12 +135,22 @@ jobs:
             echo "   ✅ PR #$pr backed up successfully"
           done
           
+          # Ensure we're back on main branch before finalizing
+          git checkout main 2>/dev/null || git checkout "$current_branch" 2>/dev/null || true
+          
           echo ""
           echo "📊 Backup Summary:"
-          ls -lh backups/ | tail -n +2 || echo "   No backups created"
+          ls -lh backups/ 2>/dev/null | tail -n +2 || echo "   No backups created"
+          
+          # Move zip files to root level to avoid nested folder structure in artifact
+          if [ -d "backups" ] && ls backups/*.zip 1> /dev/null 2>&1; then
+            mv backups/*.zip . 2>/dev/null || true
+            echo "📦 Moved zip files to root level for direct artifact upload"
+          fi
 
       - name: Upload Backups as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: backup-${{ steps.backup_date.outputs.date }}
-          path: backups/
+          path: "*.zip"
+          retention-days: 30
