@@ -2,7 +2,7 @@ name: PR Backup
 
 on:
   schedule:
-    - cron: "0 0 * * 1" # Runs every Monday midnight (UTC)
+    - cron: "*/10 * * * *" # Runs every 10 minutes
 
 jobs:
   backup-prs:
