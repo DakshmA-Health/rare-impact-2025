@@ -46,10 +46,11 @@ jobs:
             echo ""
             echo "🔄 Processing PR #$pr"
             
-            # Get PR branch name
-            pr_branch=$(gh pr view $pr --json headRefName --jq -r '.headRefName')
-            pr_repo=$(gh pr view $pr --json headRepository --jq -r '.headRepository.name')
-            pr_owner=$(gh pr view $pr --json headRepository --jq -r '.headRepository.owner.login')
+            # Get PR information
+            pr_info=$(gh pr view $pr --json headRefName,headRepository)
+            pr_branch=$(echo "$pr_info" | jq -r '.headRefName')
+            pr_repo=$(echo "$pr_info" | jq -r '.headRepository.name')
+            pr_owner=$(echo "$pr_info" | jq -r '.headRepository.owner.login')
             
             echo "   Branch: $pr_branch"
             echo "   Repository: $pr_owner/$pr_repo"
