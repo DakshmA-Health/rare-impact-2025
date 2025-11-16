@@ -21,17 +21,18 @@
 
 ## 📂 Project Structure
 
-Organize your submission as follows:
+**Simple Structure:** Create ONE folder with your team name. All your submission files go directly in this folder.
+
 ```
 submissions/
-└── your-team-name/       # Use hyphens, no spaces
-    ├── README.md         # Project documentation (include demo video link here)
-    ├── demo/             # Demo materials (optional)
-    │   └── screenshots/  # Key screenshots
-    └── src/              # Source code (if applicable)
-        ├── frontend/     # Frontend code
-        └── backend/      # Backend code
+└── your-team-name/       # Use hyphens, no spaces (e.g., "team-innovators")
+    ├── README.md         # REQUIRED: All project documentation here
+    ├── [your source code files]  # All code files directly in this folder
+    ├── [screenshots/images]       # Demo materials directly in this folder
+    └── [any other files]         # Everything in one place
 ```
+
+> 💡 **Keep it simple:** Put everything (code, docs, images, etc.) directly in your team folder. No subfolders needed!
 
 ## 🔀 Git Workflow for Teams
 
@@ -64,7 +65,8 @@ submissions/
    ```bash
    mkdir -p submissions/your-team-name
    cd submissions/your-team-name
-   # Create your README.md and project files here
+   # Add all your files here: README.md, source code, images, etc.
+   # Everything goes directly in this folder - no subfolders needed!
    ```
 
 5. **Commit and Push Your Work**

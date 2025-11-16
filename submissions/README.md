@@ -6,18 +6,18 @@ This directory contains all hackathon project submissions. Each team should crea
 
 ## 📋 Folder Structure
 
-Create a folder with your team name (use hyphens, no spaces) and include a README.md file with your project details:
+**Simple Structure:** Create ONE folder with your team name. Put ALL your files directly in this folder.
 
 ```
 submissions/
 └── your-team-name/       # Example: "team-innovators" or "rare-disease-trackers"
-    ├── README.md         # ⚠️ YOU CREATE THIS - Your project documentation (see template below)
-    ├── demo/             # Optional: Demo materials
-    │   └── screenshots/  # Key screenshots/images
-    └── src/              # Your source code (if applicable)
-        ├── frontend/     # Frontend code
-        └── backend/      # Backend code
+    ├── README.md         # ⚠️ REQUIRED - Your project documentation (see template below)
+    ├── [all your code files]     # Put source code files directly here
+    ├── [screenshots/images]      # Put demo materials directly here
+    └── [any other files]         # Everything in one place - no subfolders!
 ```
+
+> 💡 **Keep it simple:** All files (code, docs, images, etc.) go directly in your team folder. No subfolders needed!
 
 ## 📝 Your Team's README.md
 
@@ -51,7 +51,7 @@ Before submitting your PR, ensure:
 
 2. **File Size**: Keep screenshots and images reasonable in size. Large files may cause issues.
 
-3. **Code Organization**: If your project includes source code, organize it clearly in the `src/` directory.
+3. **Code Organization**: Put all your source code files directly in your team folder. No subfolders needed.
 
 4. **Documentation**: Your team's `README.md` should be comprehensive and follow the template provided in the [Submission Guidelines](../SUBMISSION_GUIDELINES.md).
 
