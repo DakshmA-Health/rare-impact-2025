@@ -1,18 +1,12 @@
 name: PR Backup
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize] # runs whenever PR is created or updated
   schedule:
-    - cron: "0 0 * * 0" # Runs every Sunday midnight (UTC)
-  workflow_dispatch: # manual trigger
+    - cron: "0 0 * * 1" # Runs every Monday midnight (UTC)
 
 jobs:
   backup-prs:
     runs-on: ubuntu-latest
-    # Only run on PRs from the same repository (not forks)
-    # For scheduled/manual runs, always run
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -27,21 +21,24 @@ jobs:
       - name: Create Backup Folder
         run: mkdir -p backups
 
+      - name: Set backup date
+        id: backup_date
+        run: echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+
       - name: Fetch and Backup All PRs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get list of PRs to backup
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PR events, backup only the current PR
-            pr_number="${{ github.event.pull_request.number }}"
-            pr_list="$pr_number"
-            echo "📦 Backing up PR #$pr_number"
-          else
-            # For scheduled/manual runs, backup all open PRs
-            pr_list=$(gh pr list --state open --json number --jq '.[].number' | tr '\n' ' ')
-            echo "📦 Backing up all open PRs: $pr_list"
+          # Get all open PRs to backup
+          pr_list=$(gh pr list --state open --json number --jq '.[].number' | tr '\n' ' ')
+          
+          if [ -z "$pr_list" ]; then
+            echo "📭 No open PRs found to backup."
+            exit 0
           fi
+          
+          echo "📦 Found open PRs to backup: $pr_list"
+          echo "📊 Total PRs: $(echo $pr_list | wc -w)"
           
           # Backup each PR
           for pr in $pr_list; do
@@ -86,9 +83,9 @@ jobs:
               echo "   ⚠️  No team folder found, using PR number"
             fi
             
-            # Create backup filename with team name and current date
+            # Create backup filename with date
             current_date=$(date +%Y%m%d)
-            backup_filename="${team_name}_${current_date}"
+            backup_filename="backup_${current_date}"
             
             # Create temporary directory for this PR
             tempDir="pr-$pr-$(date +%Y%m%d%H%M%S)"
@@ -117,13 +114,15 @@ jobs:
                 -exec cp -r {} "$tempDir/" \; 2>/dev/null || true
             }
             
-            # Create zip archive with team name and date
-            echo "   Creating backup archive: $backup_filename.zip"
+            # Create zip archive with date (one zip per PR, but all will have same date prefix)
+            # Include PR number in filename to avoid overwrites
+            backup_filename_with_pr="${backup_filename}_PR${pr}"
+            echo "   Creating backup archive: ${backup_filename_with_pr}.zip"
             cd "$tempDir"
-            zip -r "../backups/${backup_filename}.zip" . -q || {
+            zip -r "../backups/${backup_filename_with_pr}.zip" . -q || {
               echo "   ⚠️  Zip failed, trying tar..."
               cd ..
-              tar -czf "backups/${backup_filename}.tar.gz" -C "$tempDir" . || true
+              tar -czf "backups/${backup_filename_with_pr}.tar.gz" -C "$tempDir" . || true
             }
             cd ..
             
@@ -143,5 +142,5 @@ jobs:
       - name: Upload Backups as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pr-backup-${{ github.run_id }}
+          name: backup-${{ steps.backup_date.outputs.date }}
           path: backups/
